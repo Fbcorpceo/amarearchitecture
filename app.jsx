@@ -216,7 +216,7 @@ const STEPS = [
   { key: 'source',   label: 'How did you hear of us?', placeholder: 'A friend, a journal, a search…', type: 'text', hint: 'Optional — but we are curious.' },
 ];
 
-function WaitlistForm({ formData, setFormData, step, setStep, onComplete, onBack }) {
+function WaitlistForm({ formData, setFormData, step, setStep, onComplete, onBack, submitting, submitError, clearError }) {
   const total = STEPS.length;
   const current = STEPS[step];
   const value = formData[current.key] || '';
@@ -231,6 +231,7 @@ function WaitlistForm({ formData, setFormData, step, setStep, onComplete, onBack
   };
 
   const next = () => {
+    if (submitting) return;
     if (!validate(value)) return;
     if (step < total - 1) setStep(step + 1);
     else onComplete();
@@ -290,10 +291,11 @@ function WaitlistForm({ formData, setFormData, step, setStep, onComplete, onBack
               type={current.type}
               value={value}
               placeholder={current.placeholder}
-              onChange={(e) => setFormData({ ...formData, [current.key]: e.target.value })}
+              onChange={(e) => { if (submitError) clearError?.(); setFormData({ ...formData, [current.key]: e.target.value }); }}
               onKeyDown={onKey}
               autoComplete="off"
               spellCheck={false}
+              disabled={submitting}
             />
           )}
 
@@ -305,14 +307,21 @@ function WaitlistForm({ formData, setFormData, step, setStep, onComplete, onBack
         <div className="form__progress-bar" aria-hidden="true">
           <div className="form__progress-fill" style={{ width: `${((step + 1) / total) * 100}%` }}></div>
         </div>
+        {submitError && (
+          <div className="form__error" role="alert">{submitError}</div>
+        )}
         {current.type !== 'select' && (
           <button
-            className={`btn btn--gold ${!validate(value) ? 'btn--disabled' : ''}`}
+            className={`btn btn--gold ${(!validate(value) || submitting) ? 'btn--disabled' : ''}`}
             onClick={next}
             data-cursor-hover
-            disabled={!validate(value)}
+            disabled={!validate(value) || submitting}
           >
-            <span className="btn__label">{step === total - 1 ? 'Submit' : 'Continue'}</span>
+            <span className="btn__label">
+              {submitting
+                ? 'Reserving…'
+                : step === total - 1 ? 'Submit' : 'Continue'}
+            </span>
             <span className="btn__arrow" aria-hidden="true">→</span>
           </button>
         )}
@@ -380,11 +389,41 @@ function App() {
   const [step, setStep] = useState(0);
   const [transition, setTransition] = useState(null);
   const [position] = useState(() => 100 + Math.floor(Math.random() * 800));
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const transitionTo = (nextView, dir = 'wipe-up') => {
     setTransition(dir);
     setTimeout(() => { setView(nextView); }, 600);
     setTimeout(() => { setTransition(null); }, 1300);
+  };
+
+  const submitWaitlist = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const r = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+          name: formData.name.trim(),
+          city: formData.city.trim(),
+          industry: formData.industry,
+          source: formData.source?.trim() || '',
+        }),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        throw new Error(j.error || 'Could not submit. Please try again.');
+      }
+      transitionTo('success', 'wipe-gold');
+    } catch (err) {
+      setSubmitError(err.message || 'Could not submit. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -399,8 +438,11 @@ function App() {
             setFormData={setFormData}
             step={step}
             setStep={setStep}
-            onComplete={() => transitionTo('success', 'wipe-gold')}
-            onBack={() => { setStep(0); transitionTo('hero', 'wipe-down'); }}
+            onComplete={submitWaitlist}
+            onBack={() => { setStep(0); setSubmitError(null); transitionTo('hero', 'wipe-down'); }}
+            submitting={submitting}
+            submitError={submitError}
+            clearError={() => setSubmitError(null)}
           />
         )}
         {view === 'success' && <Success formData={formData} position={position} />}
