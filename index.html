@@ -121,7 +121,20 @@ body {
   justify-content: center;
   padding: 80px var(--pad) 80px;
 }
-.screen--hero { padding-top: 56px; padding-bottom: 100px; }
+.screen--hero { padding-top: 56px; padding-bottom: 100px; position: relative; }
+.screen--hero::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("/epic.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.screen--hero > * { position: relative; z-index: 2; }
 .screen--form { justify-content: flex-start; padding-top: 32px; }
 
 /* ─── Hero ─────────────────────────────────────────── */
