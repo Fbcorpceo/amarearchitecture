@@ -152,7 +152,7 @@ function Hero({ onJoin }) {
     <section className="hero">
       <div className="hero__tag">
         <span className="rule rule--short"></span>
-        <span className="hero__tag-text">Where Design Meets Desire</span>
+        <span className="hero__tag-text">The life you build is the architecture you leave behind.</span>
         <span className="rule rule--short"></span>
       </div>
 
