@@ -495,7 +495,7 @@ function SiteFooter({ view }) {
   return (
     <footer className="site-footer">
       <div className="site-footer__left">Amaré Architecture · A Quarterly</div>
-      <div className="site-footer__center">{view === 'success' ? 'Reserved' : view === 'form' ? 'Reserving Your Copy' : 'Premiere · Autumn 2026'}</div>
+      <div className="site-footer__center">{view === 'success' ? 'Reserved' : view === 'form' ? 'Reserving Your Copy' : ''}</div>
       <div className="site-footer__right">© 2026 · All Rights Reserved</div>
     </footer>
   );
