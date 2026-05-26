@@ -174,7 +174,6 @@ function Hero({ onJoin }) {
         <Stat top="Oct 2026" bottom="Premiere Issue" />
         <Stat top="National" bottom="Distribution" />
         <Stat top="12" bottom="Ad Categories" />
-        <Stat top="$30–75K" bottom="Founding Tiers" />
       </div>
 
       <div className="hero__countdown-wrap">
