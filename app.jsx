@@ -167,7 +167,6 @@ function Hero({ onJoin }) {
         ))}
       </div>
 
-      <div className="hero__rule"></div>
 
       <div className="hero__stats">
         <Stat top="100–120" bottom="Pages, Quarterly" />
