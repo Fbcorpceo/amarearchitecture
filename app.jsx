@@ -390,6 +390,7 @@ function App() {
   const [position] = useState(() => 100 + Math.floor(Math.random() * 800));
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [mediaKitOpen, setMediaKitOpen] = useState(false);
 
   const transitionTo = (nextView, dir = 'wipe-up') => {
     setTransition(dir);
@@ -447,8 +448,46 @@ function App() {
         {view === 'success' && <Success formData={formData} position={position} />}
       </main>
       <SiteFooter view={view} />
+      {view === 'hero' && <MediaKitButton onOpen={() => setMediaKitOpen(true)} />}
+      {mediaKitOpen && <MediaKitModal onClose={() => setMediaKitOpen(false)} />}
       <Curtain active={transition} />
     </>
+  );
+}
+
+function MediaKitButton({ onOpen }) {
+  return (
+    <button className="media-kit-btn" onClick={onOpen} data-cursor-hover>
+      <span className="media-kit-btn__dot" aria-hidden="true"></span>
+      <span>View Media Kit</span>
+    </button>
+  );
+}
+
+function MediaKitModal({ onClose }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="media-kit-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Media Kit">
+      <div className="media-kit-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="media-kit-close" onClick={onClose} aria-label="Close media kit">×</button>
+        <iframe
+          src="https://www.canva.com/design/DAHKbFshqRo/dnKfA7_H3l3kN3YnJi_nKA/view?embed"
+          title="Amaré Architecture Media Kit"
+          allow="fullscreen"
+          allowFullScreen
+        />
+      </div>
+    </div>
   );
 }
 
