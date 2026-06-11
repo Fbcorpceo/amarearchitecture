@@ -478,7 +478,7 @@ function MediaKitModal({ onClose }) {
       <div className="media-kit-modal" onClick={(e) => e.stopPropagation()}>
         <button className="media-kit-close" onClick={onClose} aria-label="Close media kit">×</button>
         <iframe
-          src="https://www.canva.com/design/DAHKbFshqRo/dnKfA7_H3l3kN3YnJi_nKA/view?embed"
+          src="/media-kit.pdf#view=FitH"
           title="Amaré Architecture Media Kit"
           allow="fullscreen"
           allowFullScreen
