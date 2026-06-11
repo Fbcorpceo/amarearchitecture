@@ -453,8 +453,17 @@ function App() {
 }
 
 function MediaKitButton({ onOpen }) {
+  const handleClick = () => {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+      || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.open('/media-kit.pdf', '_blank', 'noopener,noreferrer');
+    } else {
+      onOpen();
+    }
+  };
   return (
-    <button className="media-kit-btn" onClick={onOpen} data-cursor-hover>
+    <button className="media-kit-btn" onClick={handleClick} data-cursor-hover>
       <span className="media-kit-btn__dot" aria-hidden="true"></span>
       <span>View Media Kit</span>
     </button>
